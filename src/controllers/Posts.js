@@ -41,6 +41,32 @@ const getAllPosts = async (req, res) => {
   res.json(posts);
 };
 
+const getAllPostsByUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const userPosts = await prisma.post.findMany({
+      where: {
+        authorId: Number(userId),
+      },
+      include: {
+        author: true,
+        tags: true,
+        comments: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json(userPosts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving user's posts" });
+  }
+};
+
 const getPostById = async (req, res) => {
   const { id } = req.params;
 
@@ -121,6 +147,7 @@ const deletePost = async (req, res) => {
 module.exports = {
   createPost,
   getAllPosts,
+  getAllPostsByUser,
   getPostById,
   updatePost,
   deletePost,
