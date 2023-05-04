@@ -1,4 +1,6 @@
 const prisma = require("../db/db");
+const bcrypt = require("bcrypt");
+const { createUserValidators } = require("../util/validators/user-validator");
 
 // GET /users
 const getUsers = async (req, res) => {
@@ -31,9 +33,20 @@ const getUserById = async (req, res) => {
 // POST /users
 const createUser = async (req, res) => {
   const { name, email, password, username } = req.body;
+
+  //Validate user input
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  //Hash password
+  const salt = await bcrypt.genSalt(10);
+  const passwordHash = await bcrypt.hash(password, salt);
+
   try {
     const user = await prisma.user.create({
-      data: { name, email, password, username },
+      data: { name, email, password: passwordHash, username },
     });
     res.json(user);
   } catch (error) {

@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
@@ -9,8 +10,13 @@ const tagRouter = require("./src/routes/tagRoutes");
 
 const authController = require("./src/controllers/authController");
 
+const options = {
+  origin: "*",
+};
+
 // add middleware to parse JSON request bodies
 app.use(express.json());
+app.use(cors(options));
 
 // define routes
 app.use("/guardian-dispatch", postsRouter);
