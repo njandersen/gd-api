@@ -1,6 +1,7 @@
 const prisma = require("../db/db");
 const bcrypt = require("bcrypt");
 const { createUserValidators } = require("../util/validators/user-validator");
+const { validationResult } = require("express-validator");
 
 // GET /users
 const getUsers = async (req, res) => {
@@ -31,22 +32,35 @@ const getUserById = async (req, res) => {
 };
 
 // POST /users
+// POST /users
 const createUser = async (req, res) => {
   const { name, email, password, username } = req.body;
 
-  //Validate user input
+  // Use prisma to validate email and username uniqueness
+  const emailExists = await prisma.user.findUnique({ where: { email } });
+  const usernameExists = await prisma.user.findUnique({ where: { username } });
+
+  if (emailExists) {
+    return res.status(400).json({ message: "Email already exists" });
+  }
+
+  if (usernameExists) {
+    return res.status(400).json({ message: "Username already exists" });
+  }
+
+  // Validate user input
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  //Hash password
+  // Hash password
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
 
   try {
     const user = await prisma.user.create({
-      data: { name, email, password: passwordHash, username },
+      data: { name, email, password: passwordHash, username, refreshToken: "" },
     });
     res.json(user);
   } catch (error) {
