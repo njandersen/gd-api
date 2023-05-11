@@ -1,16 +1,24 @@
 const prisma = require("../db/db");
 
 const createPost = async (req, res) => {
-  const { title, content, authorId, tagId } = req.body;
+  const { title, content, username, tagId } = req.body;
 
   try {
+    // Check if user with given authorId exists
+    const user = await prisma.user.findUnique({
+      where: { username: username },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Author not found" });
+    }
+
     const tags = tagId.map((tagId) => ({ id: tagId }));
     const post = await prisma.post.create({
       data: {
         title,
         content,
         published: false,
-        authorId,
+        authorId: user.id,
         tags: { connect: tags },
       },
       include: {
