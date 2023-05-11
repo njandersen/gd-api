@@ -8,7 +8,7 @@ const {
 
 router.get("/posts", postsController.getAllPosts);
 router.get("/posts/:id", postsController.getPostById);
-router.get("/users/:userId/posts", postsController.getAllPostsByUser);
+router.get("/posts/user/:username", postsController.getAllPostsByUser);
 router.post("/posts", createPostValidators, postsController.createPost);
 router.put("/posts/:id", updatePostValidators, postsController.updatePost);
 router.delete("/posts/:id", postsController.deletePost);

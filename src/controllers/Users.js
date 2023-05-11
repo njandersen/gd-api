@@ -14,23 +14,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-// GET /users/:id
-// const getUserById = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const user = await prisma.user.findUnique({
-//       where: { id: parseInt(id) },
-//     });
-//     if (!user) {
-//       return res.status(404).send("User not found");
-//     }
-//     res.json(user);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Server error");
-//   }
-// };
-
 const getUserByUsername = async (req, res) => {
   const { username } = req.params;
   try {
@@ -47,7 +30,6 @@ const getUserByUsername = async (req, res) => {
   }
 };
 
-// POST /users
 // POST /users
 const createUser = async (req, res) => {
   const { name, email, password, username } = req.body;

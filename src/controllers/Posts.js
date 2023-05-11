@@ -42,12 +42,18 @@ const getAllPosts = async (req, res) => {
 };
 
 const getAllPostsByUser = async (req, res) => {
-  const { userId } = req.params;
+  const { username } = req.params;
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
     const userPosts = await prisma.post.findMany({
       where: {
-        authorId: Number(userId),
+        authorId: Number(user.id),
       },
       include: {
         author: true,

@@ -36,7 +36,7 @@ model User {
   email        String    @unique
   password     String
   username     String    @unique
-  refreshToken String? // Add this field to hold the refresh token
+  refreshToken String?   @unique // Add this field to hold the refresh token
   posts        Post[]
   comments     Comment[]
   createdAt    DateTime  @default(now())
